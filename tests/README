@@ -13,6 +13,7 @@ janitor/tests/whitelist.txt
 
 DATA FOR TESTS
 ---------------
+
 running the openstack nova cli below you can generate content or vms for your
 tests:
 
@@ -21,6 +22,7 @@ tests:
 
 HOW TO RUN ALL TESTS
 --------------------
+
 you have to install janitor from branch or version you want to run the tests.
 Go to janitor folder and run:
 
@@ -29,10 +31,24 @@ Go to janitor folder and run:
 
 HOW TO RUN AN INDIVIDUAL TEST
 -----------------------------
+
 you have to install janitor from branch or version you want to run the tests.
 Go to janitor folder and run:
 
   python -m pytest tests/openstack/test_instances.py -v
+
+
+ISSUES
+------
+
+1. classpath
+
+ if you are having issues with classpath you can try:
+
+ PYTHONPATH=janitor pytest tests/test_openstacksdk.py -v
+ PYTHONPATH=janitor pytest tests -v
+
+ on this example I am running the command above from my janitor folder.
 
 
 REFERENCE LINKS

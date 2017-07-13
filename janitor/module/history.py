@@ -16,6 +16,7 @@
 from prettytable import PrettyTable
 from datetime import datetime
 
+
 class History(object):
     def __init__(self, keep, deleted):
         self.keep = keep
@@ -38,15 +39,17 @@ class History(object):
         """
         create a simple report based on: when, what and who
         """
-        report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'PUBLIC IP',
-                              'IMAGE', 'CREATED AT (UTC)'])
+        report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
+                              'IMAGE', 'FLAVOR', 'CREATED AT (UTC)'])
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for vm in self.deleted:
-            report.add_row([now, 'deleted', vm.name,
-                            vm.public_ips, vm.image, vm.created_at])
+            report.add_row([now, 'deleted', vm['name'],
+                            vm['ips'], vm['image'],
+                            vm['flavor'], vm['created_at']])
 
         for vm in self.keep:
-            report.add_row([now, 'in whitelist',
-                            vm.name, vm.public_ips, vm.image, vm.created_at])
+            report.add_row([now, 'in whitelist', vm['name'],
+                            vm['ips'], vm['image'],
+                            vm['flavor'], vm['created_at']])
 
         return report

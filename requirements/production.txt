@@ -1,2 +1,3 @@
-apache-libcloud
 click
+PrettyTable
+python-openstackclient==3.11.0

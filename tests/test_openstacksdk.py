@@ -12,3 +12,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+
+import pytest
+from module.openstack import OpenstackSDK
+from helper import OPENSTACK_CREDS_PATH
+
+
+class TestInstances(object):
+
+    def test_get_all_instances(self):
+        openstack = OpenstackSDK(OPENSTACK_CREDS_PATH)
+        if openstack.get_all_instances():
+            assert True
+        else:
+            assert False

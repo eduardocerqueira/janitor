@@ -13,12 +13,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import libcloud.security
-from libcloud.compute.types import Provider
-from libcloud.compute.providers import get_driver
 from os import getenv
-
-libcloud.security.VERIFY_SSL_CERT = False
+from novaclient.client import Client
+from keystoneauth1.identity import v2
+from keystoneauth1 import session
+import glanceclient.v2.client as glclient
 
 
 class Credentials(object):
@@ -64,36 +63,53 @@ class Credentials(object):
                 if line.startswith('export'):
                     # string formating
                     kv = line.replace("export", "").replace("\"", "").\
-                    strip().split("=")
+                        strip().split("=")
                     if "/v2.0" in kv[1]:
                         kv[1] = kv[1].replace("/v2.0", "")
                     openrc[kv[0]] = kv[1]
             return openrc
 
 
-class Openstack(object):
+class OpenstackSDK(object):
     def __init__(self, openrc=None):
         self.creds = Credentials(openrc)
-        openstack = get_driver(Provider.OPENSTACK)
-        self.driver = openstack(self.creds.osp_username,
-                                self.creds.osp_password,
-                                ex_force_auth_version=\
-                                self.creds.osp_auth_version,
-                                ex_force_auth_url=\
-                                self.creds.osp_auth_url,
-                                ex_force_service_type=\
-                                self.creds.osp_service_type,
-                                ex_force_service_region=\
-                                self.creds.osp_service_region,
-                                ex_tenant_name=self.creds.osp_tenant)
+        self.auth = v2.Password(auth_url="%s/%s"
+                                % (self.creds.osp_auth_url, "/v2.0"),
+                                username=self.creds.osp_username,
+                                password=self.creds.osp_password,
+                                tenant_name=self.creds.osp_tenant)
+        self.session = session.Session(auth=self.auth)
+        self.nova = Client('2', session=self.session)
+        self.glance = glclient.Client('2', session=self.session)
 
     def get_all_instances(self):
-        """Retrieve list of all instances"""
-        return self.driver.list_nodes()
+        rs = self.nova.servers.list()
+        vm_list = []
+        for vm in rs:
+            image = self.glance.images.get(vm.image['id'])
+            instance = {'name': vm.name,
+                        'image': image.name,
+                        'created_at': vm.created,
+                        'flavor': vm.flavor['id'],
+                        'ips': ', '.join(self.get_server_ips(vm)),
+                        'id': vm.id,
+                        'obj': vm
+                        }
+            vm_list.append(instance)
+        return vm_list
 
     def delete_instance(self, vm):
         """delete openstack instance"""
-        return self.driver.destroy_node(vm)
+        try:
+            self.nova.servers.delete(vm['obj'])
+            return True
+        except Exception as ex:
+            print ex
 
-
-
+    def get_server_ips(self, server):
+        """get IPs for a given server object"""
+        server_ips = []
+        for key, value in server.addresses.iteritems():
+            for elem in value:
+                server_ips.append(elem['addr'])
+        return server_ips

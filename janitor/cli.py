@@ -15,8 +15,9 @@
 
 import click
 
-from module.openstack import Openstack
+from module.openstack import OpenstackSDK
 from module.clean import Clean
+
 
 @click.group()
 def cli():
@@ -27,13 +28,13 @@ def cli():
 
 @click.command(short_help='clean-up VM and public IP from Openstack tenant')
 @click.option('--openrc', multiple=False,
-              type=click.Path(), help="path to your openstack openrc file",
+              type=click.Path(), help="path to your openstacksdk openrc file",
               required=False)
 @click.option('--whitelist', envvar='WHITELIST', multiple=False,
               type=click.Path(), help="path to your whitelist file to keep",
               required=True)
 def openstack(openrc, whitelist):
-    openstack = Openstack(openrc)
+    openstack = OpenstackSDK(openrc)
     vms = openstack.get_all_instances()
     clean = Clean(vms, whitelist, openstack)
     clean.run()

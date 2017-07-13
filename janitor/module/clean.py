@@ -18,6 +18,7 @@ from os.path import exists
 from util import file_mgmt
 from history import History
 
+
 class Clean(object):
     """ """
     def __init__(self, vms, wlist_path, driver):
@@ -34,7 +35,6 @@ class Clean(object):
         wlist = file_mgmt('r', file_path=self.wlist_path)
         return wlist.split()
 
-
     def match_whitelist(self):
         """ """
         print "ok"
@@ -46,20 +46,19 @@ class Clean(object):
         to_keep_names = []
         for vm in self.vm_list:
             for wlisted in self.wlist_data:
-                if fnmatch(vm.name, wlisted):
+                if fnmatch(vm['name'], wlisted):
                     to_keep.append(vm)
-                    to_keep_names.append(vm.name)
+                    to_keep_names.append(vm['name'])
 
         # delete vm not in the whitelist
         deleted = []
         for vm in self.vm_list:
-            if vm.name not in to_keep_names:
+            if vm['name'] not in to_keep_names:
                 if self.driver.delete_instance(vm):
                     deleted.append(vm)
                 else:
-                    print "Could not delete vm %s" % vm.name
+                    print "Could not delete vm %s" % vm['name']
 
         # history
         history = History(to_keep, deleted)
         history.print_report()
-

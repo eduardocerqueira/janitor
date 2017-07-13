@@ -14,16 +14,27 @@
 #
 
 import pytest
-from module.openstack import Openstack
-from tests import OPENSTACK_CREDS_PATH
+from module.openstack import OpenstackSDK
+from helper import OPENSTACK_CREDS_PATH
 
 
-class TestInstances(object):
+class TestCredentials(object):
+
+    def test_negative_credentials(self):
+        try:
+            OpenstackSDK()
+        except:
+            assert True
+
+    def test_credentials(self):
+        if OpenstackSDK(OPENSTACK_CREDS_PATH):
+            assert True
+        else:
+            assert False
 
     def test_get_all_instances(self):
-        openstack = Openstack(OPENSTACK_CREDS_PATH)
-        rs = openstack.get_all_instances()
-        if rs:
+        openstack = OpenstackSDK(OPENSTACK_CREDS_PATH)
+        if openstack.get_all_instances():
             assert True
         else:
             assert False
