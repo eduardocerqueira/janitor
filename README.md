@@ -3,29 +3,92 @@
 
 # janitor
 
-MOTIVATION:
+MOTIVATION
+----------
 
 One of my Openstack tenants that I use to run tests for an internal tool has a very limited quota so all the time I need to stop my tests and automations and spend few minutes
 cleaning up public/floating ips, destroying virtual machines and others. The idea to have janitor or a butler is actually an old idea and a coworker had implemented
 it but in a more sophisticated and fashion way this is a simply version and currently only focusing in Openstack maybe further I'll extend it to AWS, Openshift and others.
 
-WHAT IS THIS?
+WHAT IS THIS
+-------------
 
 Linux tool to help clean-up tasks for Openstack.
 
-USAGE:
+USAGE
 
 clean up virtual machines and release floating ips for Openstack keep items declared in the whitelist.txt file:
 
-1. load your Openstack rc
+1. load your Openstack rc to system environment variable or pass as parameter
 2. run janitor
 
     source ~/mytenant-openrc.sh
-	janitor --openstack --whitelist /tmp/whitelist.txt
+
+	janitor openstack --whitelist /tmp/whitelist.txt
+	janitor openstack --openrc /tmp/mytenant-openrc.sh --whitelist /tmp/whitelist.txt
 
 listing history for your janitor:
 
-	janitor --history
+	janitor history
+
+DEMO
+----
+
+Running the program without parameters:
+
+	[ecerquei@dev ~]$ janitor
+	Usage: janitor [OPTIONS] COMMAND [ARGS]...
+
+	  Janitor clean-up the left-over in your Openstack tenant to know more check
+	  documentation running: man janitor
+
+	Options:
+	  --help  Show this message and exit.
+
+	Commands:
+	  history    show janitor history
+	  openstack  clean-up VM and public IP from Openstack tenant
+
+
+Running the program with with parameters to make clean-up:
+
+	[ecerquei@dev ~]$ janitor openstack --openrc /home/ecerquei/git/janitor/tests/test-openrc.sh --whitelist /home/ecerquei/git/janitor/tests/whitelist.txt
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	|      TIMESTAMP      |    ACTION    |       NAME       |             IPs             |                   IMAGE                    | FLAVOR |   CREATED AT (UTC)   |
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	| 2017-07-13 15:00:57 |   deleted    |    QA-DB-100     |        172.16.91.195        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:38Z |
+	| 2017-07-13 15:00:57 |   deleted    |    DEV-WEB-10    |        172.16.91.194        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:24Z |
+	| 2017-07-13 15:00:57 |   deleted    |    PROD-APP1     |        172.16.91.193        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:10Z |
+	| 2017-07-13 15:00:57 |   deleted    | test_123_456_789 |        172.16.91.192        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:55:58Z |
+	| 2017-07-13 15:00:57 |   deleted    |    test123456    |        172.16.91.191        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:55:47Z |
+	| 2017-07-13 15:00:57 | in whitelist |  jslave_centos   | 172.16.91.173, 10.8.187.160 |            paws-jslave-centos7             |   3    | 2017-07-13T01:02:58Z |
+	| 2017-07-13 15:00:57 | in whitelist | jslave_fedora25  | 172.16.91.172, 10.8.187.207 |            paws-jslave-fedora25            |   3    | 2017-07-13T01:02:08Z |
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	+---------------------+---------+--------------+
+	|      TIMESTAMP      |  ACTION | FLOATING IP  |
+	+---------------------+---------+--------------+
+	| 2017-07-13 15:00:57 | deleted | 10.8.180.199 |
+	+---------------------+---------+--------------+
+
+Running the program with parameter to print history file:
+
+	[ecerquei@dev ~]$ janitor history
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	|      TIMESTAMP      |    ACTION    |       NAME       |             IPs             |                   IMAGE                    | FLAVOR |   CREATED AT (UTC)   |
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	| 2017-07-13 15:00:57 |   deleted    |    QA-DB-100     |        172.16.91.195        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:38Z |
+	| 2017-07-13 15:00:57 |   deleted    |    DEV-WEB-10    |        172.16.91.194        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:24Z |
+	| 2017-07-13 15:00:57 |   deleted    |    PROD-APP1     |        172.16.91.193        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:56:10Z |
+	| 2017-07-13 15:00:57 |   deleted    | test_123_456_789 |        172.16.91.192        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:55:58Z |
+	| 2017-07-13 15:00:57 |   deleted    |    test123456    |        172.16.91.191        | CentOS-Atomic-Host-7.20160130-GenericCloud |   2    | 2017-07-13T18:55:47Z |
+	| 2017-07-13 15:00:57 | in whitelist |  jslave_centos   | 172.16.91.173, 10.8.187.160 |            paws-jslave-centos7             |   3    | 2017-07-13T01:02:58Z |
+	| 2017-07-13 15:00:57 | in whitelist | jslave_fedora25  | 172.16.91.172, 10.8.187.207 |            paws-jslave-fedora25            |   3    | 2017-07-13T01:02:08Z |
+	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
+	+---------------------+---------+--------------+
+	|      TIMESTAMP      |  ACTION | FLOATING IP  |
+	+---------------------+---------+--------------+
+	| 2017-07-13 15:00:57 | deleted | 10.8.180.199 |
+	+---------------------+---------+--------------+
 
 
 # For developer and contributers
@@ -45,6 +108,7 @@ I use make so it requires basic packages in your machine I recommend: python-set
 	tarball   generate tarball of project
 	rpm       build source codes and generate rpm file
 	srpm      generate SRPM file
+	build     generate srpm and send to build in copr
 	all       clean test doc rpm
 	flake8    check Python style based on flake8
 
@@ -56,9 +120,9 @@ and if your environment is setup properly you should have your RPM at: /home/use
 
 janitor is being built on Fedora Copr: https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/
 
-running a new build:
+running a new build you need to check your ~/.config/copr-fedora file and run:
 
-	$ copr-cli build janitor https://github.com/eduardocerqueira/janitor/raw/master/copr/janitor-0.0.1-1.src.rpm
+	make build
 
 
 ## install
@@ -80,20 +144,7 @@ To install from latest RPM:
 	$ sudo yum install https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/epel-7-x86_64/00489346-janitor/janitor-0.0.1-1.x86_64.rpm
 	$ sudo dnf install https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/fedora-24-x86_64/00474191-janitor/janitor-0.0.1-1.x86_64.rpm
 
-
-sample of reports:
-
-Report with 2 executions appended:
-![Preview](https://github.com/eduardocerqueira/janitor/raw/master/docs/source/_static/1_report.png)
-
-Report with 1 execution:
-![Preview](https://github.com/eduardocerqueira/janitor/raw/master/docs/source/_static/report_append.png)
-
-Listing DST with .sh files migrated from SRC and all links created from SRC to DST:
-
-![Preview](https://github.com/eduardocerqueira/janitor/raw/master/docs/source/_static/src_link.png)
-
-![Preview](https://github.com/eduardocerqueira/janitor/raw/master/docs/source/_static/dst_migrated.png)
+or if links above don't work go to Copr Janitor project for more details how to proceed from here.
 
 
 ## MORE INFO

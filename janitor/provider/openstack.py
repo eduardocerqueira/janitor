@@ -18,7 +18,7 @@ from novaclient.client import Client
 from keystoneauth1.identity import v2
 from keystoneauth1 import session
 import glanceclient.v2.client as glclient
-
+from neutronclient.v2_0.client import Client as neutronclient
 
 class Credentials(object):
     def __init__(self, openrc=None):
@@ -81,6 +81,7 @@ class OpenstackSDK(object):
         self.session = session.Session(auth=self.auth)
         self.nova = Client('2', session=self.session)
         self.glance = glclient.Client('2', session=self.session)
+        self.neutron = neutronclient(session=self.session)
 
     def get_all_instances(self):
         rs = self.nova.servers.list()
@@ -113,3 +114,20 @@ class OpenstackSDK(object):
             for elem in value:
                 server_ips.append(elem['addr'])
         return server_ips
+
+    def get_zoombies_floating_ips(self):
+        """get all floating ips and filter by disassociated ips"""
+        all_floating_ips = self.neutron.list_floatingips()
+        zoombies = []
+        for fip in all_floating_ips['floatingips']:
+            if not fip['port_id'] and not fip['router_id']:
+                zoombies.append(fip)
+        return zoombies
+
+    def delete_floating_ip(self, ip):
+        """delete openstack instance"""
+        try:
+            self.neutron.delete_floatingip(ip)
+            return True
+        except Exception as ex:
+            print ex

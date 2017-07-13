@@ -14,7 +14,7 @@
 #
 
 import pytest
-from module.openstack import OpenstackSDK
+from provider.openstack import OpenstackSDK
 from helper import OPENSTACK_CREDS_PATH
 
 
@@ -35,3 +35,12 @@ class TestInstances(object):
                 assert True
             else:
                 assert False
+
+    def test_get_zoombies_floating_ips(self):
+        openstack = OpenstackSDK(OPENSTACK_CREDS_PATH)
+        ips_zoombies = openstack.get_zoombies_floating_ips()
+        if ips_zoombies:
+            assert True
+        else:
+            print "ZERO, it is fine!"
+            assert True

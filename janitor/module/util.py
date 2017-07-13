@@ -56,7 +56,7 @@ def file_mgmt(operation, file_path, content=None, cfg_parser=None):
             raise IOError("%s file not found!" % file_path)
     elif operation in ['w', 'write']:
         # Write
-        mode = 'w+' if exists(file_path) else 'w'
+        mode = 'a+' if exists(file_path) else 'w'
         if file_ext == ".json":
             # json
             with open(file_path, mode) as f_raw:

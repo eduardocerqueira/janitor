@@ -22,6 +22,7 @@ help:
 	@echo "tarball   generate tarball of p roject"
 	@echo "rpm       build source codes and generate rpm file"
 	@echo "srpm      generate SRPM file"
+	@echo "build     generate srpm and send to build in copr"
 	@echo "all       clean test doc rpm"
 	@echo "flake8    check Python style based on flake8"
 	@echo
@@ -66,6 +67,14 @@ srpm: tarball
 
 rpm: srpm
 	rpmbuild --define="_topdir $(RPMTOP)" --rebuild $(RPMTOP)/SRPMS/$(SRPM)
+
+build: srpm
+	# run build in copr project depending of your local branch.
+	# you need to have a valid ~/.config/copr-fedora file to use copr-cli
+	@echo "building source-code from branch $(BRANCH)"
+	@echo "running build in https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/"
+	@copr-cli --config /home/$(USER)/.config/copr-fedora \
+	build eduardocerqueira/janitor $(RPMTOP)/SRPMS/$(SRPM) 
 
 # Unit tests
 TEST_SOURCE=tests

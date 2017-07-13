@@ -35,10 +35,6 @@ class Clean(object):
         wlist = file_mgmt('r', file_path=self.wlist_path)
         return wlist.split()
 
-    def match_whitelist(self):
-        """ """
-        print "ok"
-
     def run(self):
         """ """
         # Get full name of vms in whitelist and to keep running
@@ -59,6 +55,16 @@ class Clean(object):
                 else:
                     print "Could not delete vm %s" % vm['name']
 
+        # delete zoombies floating ips
+        ips_deleted = []
+        zoombies_ips = self.driver.get_zoombies_floating_ips()
+        for ip in zoombies_ips:
+            if self.driver.delete_floating_ip(ip['id']):
+                ips_deleted.append(ip)
+            else:
+                print "Could not delete ip %s" % ip
+
         # history
-        history = History(to_keep, deleted)
+        history = History(to_keep, deleted, ips_deleted)
         history.print_report()
+        history.update_history()

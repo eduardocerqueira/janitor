@@ -15,41 +15,73 @@
 
 from prettytable import PrettyTable
 from datetime import datetime
+from util import file_mgmt
+from os import getenv
+from os.path import join, exists
 
 
 class History(object):
-    def __init__(self, keep, deleted):
+    def __init__(self, keep=None, deleted=None, ips_deleted=None):
         self.keep = keep
         self.deleted = deleted
+        self.ips_deleted = ips_deleted
         self.report = self.create_report()
+        self.history_path = join(getenv('HOME'), ".janitor_history.txt")
 
     def update_history(self):
         """append latest report to history file"""
-        return True
+        if self.report:
+            file_mgmt('w', file_path=self.history_path, content=self.report)
 
     def print_history(self):
         """print history file"""
-        return True
+        if exists(self.history_path):
+            history = file_mgmt('r', file_path=self.history_path)
+            print history
+        else:
+            print "no history yet"
 
     def print_report(self):
         """print current report"""
-        print self.report
+        if self.report:
+            print self.report
 
     def create_report(self):
         """
         create a simple report based on: when, what and who
         """
-        report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
+        # nothing to display
+        if not self.keep and not self.deleted and not self.ips_deleted:
+            return None
+
+        # instances/vm report
+        vm_report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
                               'IMAGE', 'FLAVOR', 'CREATED AT (UTC)'])
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for vm in self.deleted:
-            report.add_row([now, 'deleted', vm['name'],
+            vm_report.add_row([now, 'deleted', vm['name'],
                             vm['ips'], vm['image'],
                             vm['flavor'], vm['created_at']])
 
         for vm in self.keep:
-            report.add_row([now, 'in whitelist', vm['name'],
+            vm_report.add_row([now, 'in whitelist', vm['name'],
                             vm['ips'], vm['image'],
                             vm['flavor'], vm['created_at']])
 
-        return report
+        # floating ip report
+        ip_report = PrettyTable(['TIMESTAMP', 'ACTION', 'FLOATING IP'])
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        for ip in self.ips_deleted:
+            ip_report.add_row([now, 'deleted', ip['floating_ip_address']])
+
+        # group both reports
+        full_report = None
+
+        if vm_report._rows.__len__() > 0:
+            full_report = str(vm_report) + "\n"
+
+        if ip_report._rows.__len__() > 0:
+            full_report = full_report + str(ip_report) + "\n\n"
+
+        return full_report

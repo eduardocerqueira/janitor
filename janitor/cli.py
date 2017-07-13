@@ -15,9 +15,9 @@
 
 import click
 
-from module.openstack import OpenstackSDK
+from provider.openstack import OpenstackSDK
 from module.clean import Clean
-
+from module.history import History
 
 @click.group()
 def cli():
@@ -36,14 +36,16 @@ def cli():
 def openstack(openrc, whitelist):
     openstack = OpenstackSDK(openrc)
     vms = openstack.get_all_instances()
+    # clean up
     clean = Clean(vms, whitelist, openstack)
     clean.run()
 
 
 @click.command(short_help='show janitor history')
 def history():
-    print "history"
-    pass
+    # History
+    history = History()
+    history.print_history()
 
 
 def janitor():

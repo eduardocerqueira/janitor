@@ -14,7 +14,7 @@
 #
 
 import pytest
-from module.openstack import OpenstackSDK
+from provider.openstack import OpenstackSDK
 from helper import OPENSTACK_CREDS_PATH
 
 
