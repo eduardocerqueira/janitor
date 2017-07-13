@@ -1,0 +1,4 @@
+centos
+rhel
+jslave*
+windows*

@@ -1,0 +1,294 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "JANITOR" "1" "Jul 12, 2017" "0.0.1" "janitor"
+.SH NAME
+janitor \- janitor Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.sp
+Contents:
+.SH MOTIVATION
+.sp
+One of my Openstack tenants that I use to run tests for an internal tool has
+a very limited quota so all the time I need to stop my tests and automations
+and spend few minutes cleaning up public/floating ips, destroying
+virtual machines and others. The idea to have janitor or a butler is actually
+an old idea and a coworker had implemented it but in a more sophisticated
+and fashion way this is a simply version and currently only focusing in
+Openstack maybe further I’ll extend it to AWS, Openshift and others.
+.SH EXAMPLES
+.sp
+USAGE:
+.sp
+clean up virtual machines and release floating ips for Openstack keep items declared in the whitelist.txt file:
+.INDENT 0.0
+.IP 1. 3
+load your Openstack rc
+.IP 2. 3
+run janitor
+.INDENT 3.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B source ~/mytenant\-openrc.sh
+janitor –openstack –whitelist /tmp/whitelist.txt
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+listing history for your janitor:
+.INDENT 0.0
+.INDENT 3.5
+janitor –history
+.UNINDENT
+.UNINDENT
+.SH INSTALL
+.sp
+\fBTested on Fedora 24 and AWS Linux version 7.0\fP
+.sp
+Fedora OS:
+.sp
+local build:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+make rpm
+sudo dnf reinstall rpmbuild/RPMS/x86_64/janitor\-0.1\-1.x86_64.rpm
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+copr repo:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo dnf install copr....
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+AWS Linux OS:
+.sp
+copr repo:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo yum install copr....
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH SETUP DEVELOPMENT ENVIRONMENT
+.SS Source Code
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ git clone https://github.com/eduardocerqueira/janitor.git
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Installation
+.SS Option 1: Start it on RPM
+.sp
+For development purposes, install following dependencies:
+.INDENT 0.0
+.IP \(bu 2
+python = 2.7
+.IP \(bu 2
+python\-pip
+.IP \(bu 2
+Run the following
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ cd janitor
+$ pip install \-r requirements/devel.txt
+$ pip install \-r requirements/production.txt
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Option 2: Start it on Docker
+.sp
+\fBin progress\fP
+.INDENT 0.0
+.IP \(bu 2
+Install Docker: see the \fI\%official installation
+guide\fP for details. Generally, it
+might be enough to run install it with \fByum\fP and the run it.
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ sudo yum install docker\-engine
+$ sudo service docker start
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+for OS with SELINUX capabilities remember to setenforce 0 before start your docker service
+.IP \(bu 2
+Use this command to build a new image
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ sudo docker build \-t <YOUR_NAME>/janitor <the directory your Dockerfile is located>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Run the container
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ docker run \-it \-d \-P <YOUR_NAME>/janitor /bin/bash
+$ janitor \-\-help
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SH BUILD
+.SS From your local machine
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ cd janitor
+$ make
+
+Usage: make <target> where <target> is one of
+
+clean     clean temp files from local workspace
+doc       generate sphinx documentation and man pages
+test      run unit tests locally
+tarball   generate tarball of project
+rpm       build source codes and generate rpm file
+srpm      generate SRPM file
+all       clean test doc rpm
+flake8    check Python style based on flake8
+
+
+$ make rpm
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Copr
+.INDENT 0.0
+.INDENT 3.5
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+Before doing any release, make sure that you have account on both sites and also make sure that you could
+access to your fedorapeople space [1] and have enough permissions [2] to build \fIjanitor\fP in \fICopr\fP\&.
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.INDENT 3.5
+$ make srpm
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 1. 3
+copy rpmbuild/SRPMS/janitor\-0.0.1\-1.src.rpm to janitor/copr
+.IP 2. 3
+push janitor/copr to github
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+\fIcopr\-cli\fP will be used, installed by \fIsudo yum/dnf install copr\-cli\fP and configure it. [3]
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+Request as \fIBuilder\fP for projects \fIjanitor\fP, wait until admin approves.
+.sp
+$ copr\-cli build janitor \fI\%https://github.com/eduardocerqueira/janitor/raw/master/copr/janitor\-0.0.1\-1.src.rpm\fP
+.sp
+Go and grab a cup of tea or coffee, the release build will be come out soon
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# tag based builds: \(gahttps://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/\(ga
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP [1] 5
+\fI\%https://fedorahosted.org/copr/wiki/HowToEnableRepo\fP
+.IP [2] 5
+\fI\%http://fedoraproject.org/wiki/Infrastructure/fedorapeople.org#Accessing_Your_fedorapeople.org_Space\fP
+.IP [3] 5
+\fI\%https://fedorahosted.org/copr/wiki/UserDocs#CanIgiveaccesstomyrepotomyteammate\fP
+.IP [4] 5
+\fI\%https://copr.fedoraproject.org/api/\fP
+.INDENT 0.0
+.IP \(bu 2
+genindex
+.IP \(bu 2
+search
+.UNINDENT
+.SH AUTHOR
+janitor Devel Team
+.SH COPYRIGHT
+2014-2015, janitor Devel Team
+.\" Generated by docutils manpage writer.
+.

@@ -1,0 +1,55 @@
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+import click
+
+from module.openstack import Openstack
+from module.clean import Clean
+
+@click.group()
+def cli():
+    """Janitor clean-up the left-over in your Openstack tenant to know more
+    check documentation running: man janitor"""
+    pass
+
+
+@click.command(short_help='clean-up VM and public IP from Openstack tenant')
+@click.option('--openrc', multiple=False,
+              type=click.Path(), help="path to your openstack openrc file",
+              required=False)
+@click.option('--whitelist', envvar='WHITELIST', multiple=False,
+              type=click.Path(), help="path to your whitelist file to keep",
+              required=True)
+def openstack(openrc, whitelist):
+    openstack = Openstack(openrc)
+    vms = openstack.get_all_instances()
+    clean = Clean(vms, whitelist, openstack)
+    clean.run()
+
+
+@click.command(short_help='show janitor history')
+def history():
+    print "history"
+    pass
+
+
+def janitor():
+    cli.add_command(openstack)
+    cli.add_command(history)
+    cli(prog_name='janitor')
+
+
+if __name__ == "__main__":
+    janitor()

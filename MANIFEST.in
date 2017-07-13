@@ -1,0 +1,12 @@
+include setup.py
+include LICENSE
+include README.md
+include AUTHORS
+include docs/build/man/janitor.1
+recursive-include requirements *
+recursive-include janitor *.py
+recursive-exclude tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.orig
+recursive-exclude docs *
+global-exclude .pyc .pyo
