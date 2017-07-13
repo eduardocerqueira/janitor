@@ -141,8 +141,25 @@ To install from latest RPM:
 
 **repo:** https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/
 
-	$ sudo yum install https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/epel-7-x86_64/00489346-janitor/janitor-0.0.1-1.x86_64.rpm
-	$ sudo dnf install https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/fedora-24-x86_64/00474191-janitor/janitor-0.0.1-1.x86_64.rpm
+for Fedora:
+
+	sudo dnf copr enable eduardocerqueira/janitor
+
+or if needed get the repo from https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/
+and maybe is needed to disable **gpgcheck=0**
+
+
+	[eduardocerqueira-janitor]
+	name=Copr repo for janitor owned by eduardocerqueira
+	baseurl=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/epel-7-$basearch/
+	type=rpm-md
+	skip_if_unavailable=True
+	gpgcheck=0
+	gpgkey=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/pubkey.gpg
+	repo_gpgcheck=0
+	enabled=1
+	enabled_metadata=1
+
 
 or if links above don't work go to Copr Janitor project for more details how to proceed from here.
 
