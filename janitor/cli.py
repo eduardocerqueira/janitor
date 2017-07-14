@@ -19,6 +19,7 @@ from provider.openstack import OpenstackSDK
 from module.clean import Clean
 from module.history import History
 
+
 @click.group()
 def cli():
     """Janitor clean-up the left-over in your Openstack tenant to know more

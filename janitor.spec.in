@@ -8,6 +8,10 @@ Source0:	http://github.com/eduardocerqueira/janitor/%{name}-%{version}.tar.gz
 
 BuildRequires:  python-setuptools
 Requires:       python
+Requires:		python-pip
+Requires:		python-click
+Requires:		python-prettytable
+Requires:		python-openstackclient
 
 %global debug_package %{nil}
 

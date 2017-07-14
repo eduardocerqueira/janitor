@@ -18,7 +18,7 @@ from os.path import exists, join, dirname
 
 
 ROOT = dirname(getcwd())
-print ROOT
+
 
 def get_openstack_creds():
 

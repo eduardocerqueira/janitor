@@ -131,11 +131,14 @@ Installing from your local machine, after you build your own RPM just run:
 
 for Fedora:
 
-	$ sudo dnf install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
+	sudo dnf install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
 
-for RHEL and CentOS:
+for CentOS:
 
-	$ sudo yum install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
+	*requires openstack repo*. you can consult here the latest repo https://wiki.openstack.org/wiki/Release_Naming
+
+	sudo yum install centos-release-openstack-newton.noarch
+	sudo yum install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
 
 To install from latest RPM:
 
@@ -162,6 +165,65 @@ and maybe is needed to disable **gpgcheck=0**
 
 
 or if links above don't work go to Copr Janitor project for more details how to proceed from here.
+
+INSTALLATION FAQ
+----------------
+
+Running on CentOS7 even having EPEL and centos-release-openstack-newton I got this error in one of my CentOS
+server.
+
+
+	[root@centos7 yum.repos.d]# janitor
+	Traceback (most recent call last):
+	  File "/usr/bin/janitor", line 6, in <module>
+	    from pkg_resources import load_entry_point
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3038, in <module>
+	    @_call_aside
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3022, in _call_aside
+	    f(*args, **kwargs)
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 3051, in _initialize_master_working_set
+	    working_set = WorkingSet._build_master()
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 659, in _build_master
+	    return cls._build_from_requirements(__requires__)
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 672, in _build_from_requirements
+	    dists = ws.resolve(reqs, Environment())
+	  File "/usr/lib/python2.7/site-packages/pkg_resources/__init__.py", line 862, in resolve
+	    raise VersionConflict(dist, req).with_context(dependent_req)
+	pkg_resources.ContextualVersionConflict: (requests 2.11.1 (/usr/lib/python2.7/site-packages), Requirement.parse('requests>=2.14.2'), set(['python-keystoneclient']))
+
+
+It is happening because python-requests lib is needed on version requests>=2.14.2 required by python-keystoneclient
+when I ran:
+
+	yum provides python-requests
+
+the latest version I got was 2.11 that still don't satisfacts.
+
+	python-requests-2.6.0-1.el7_1.noarch : HTTP library, written in Python, for human beings
+	Repo        : base
+
+
+
+	python-requests-2.10.0-1.el7.noarch : HTTP library, written in Python, for human beings
+	Repo        : centos-openstack-newton
+
+
+
+	python2-requests-2.11.1-1.el7.noarch : HTTP library, written in Python, for human beings
+	Repo        : centos-openstack-newton
+	Matched from:
+	Provides    : python-requests = 2.11.1-1.el7
+
+
+
+	python2-requests-2.11.1-1.el7.noarch : HTTP library, written in Python, for human beings
+	Repo        : @centos-openstack-newton
+	Matched from:
+	Provides    : python-requests = 2.11.1-1.el7
+
+The trick here was, forcing reinstall requests using pip:
+
+	pip install requests --upgrade
 
 
 ## MORE INFO

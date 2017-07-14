@@ -17,8 +17,9 @@ from os import getenv
 from novaclient.client import Client
 from keystoneauth1.identity import v2
 from keystoneauth1 import session
-import glanceclient.v2.client as glclient
 from neutronclient.v2_0.client import Client as neutronclient
+import glanceclient.v2.client as glclient
+
 
 class Credentials(object):
     def __init__(self, openrc=None):

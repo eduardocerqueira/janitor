@@ -56,17 +56,17 @@ class History(object):
 
         # instances/vm report
         vm_report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
-                              'IMAGE', 'FLAVOR', 'CREATED AT (UTC)'])
+                                 'IMAGE', 'FLAVOR', 'CREATED AT (UTC)'])
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for vm in self.deleted:
             vm_report.add_row([now, 'deleted', vm['name'],
-                            vm['ips'], vm['image'],
-                            vm['flavor'], vm['created_at']])
+                               vm['ips'], vm['image'],
+                               vm['flavor'], vm['created_at']])
 
         for vm in self.keep:
             vm_report.add_row([now, 'in whitelist', vm['name'],
-                            vm['ips'], vm['image'],
-                            vm['flavor'], vm['created_at']])
+                               vm['ips'], vm['image'],
+                               vm['flavor'], vm['created_at']])
 
         # floating ip report
         ip_report = PrettyTable(['TIMESTAMP', 'ACTION', 'FLOATING IP'])
