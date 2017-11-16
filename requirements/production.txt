@@ -1,3 +1,5 @@
 click
 PrettyTable
 python-openstackclient
+python-neutronclient
+python-novaclient
