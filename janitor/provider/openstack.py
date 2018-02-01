@@ -13,12 +13,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import glanceclient.v2.client as glclient
 from os import getenv
 from novaclient.client import Client
 from keystoneauth1.identity import v2
 from keystoneauth1 import session
 from neutronclient.v2_0.client import Client as neutronclient
-import glanceclient.v2.client as glclient
+from sys import exit
 
 
 class Credentials(object):
@@ -85,19 +86,45 @@ class OpenstackSDK(object):
         self.neutron = neutronclient(session=self.session)
 
     def get_all_instances(self):
-        rs = self.nova.servers.list()
-        vm_list = []
-        for vm in rs:
-            image = self.glance.images.get(vm.image['id'])
-            instance = {'name': vm.name,
-                        'image': image.name,
-                        'created_at': vm.created,
-                        'flavor': vm.flavor['id'],
-                        'ips': ', '.join(self.get_server_ips(vm)),
-                        'id': vm.id,
-                        'obj': vm
-                        }
-            vm_list.append(instance)
+        try:
+            rs = self.nova.servers.list()
+            vm_list = []
+            for vm in rs:
+                name = None
+                image = None
+                created_at = None
+                flavor = None
+                vm_id = None
+
+                if "id" in vm.image:
+                    os_img = self.glance.images.get(vm.image['id'])
+                    image = os_img['name']
+
+                if vm.name and vm.name is not None:
+                    name = vm.name
+
+                if vm.created and vm.created is not None:
+                    created_at = vm.created
+
+                if vm.flavor and "id" in vm.flavor is not None:
+                    flavor = vm.flavor['id']
+
+                if vm.id and vm.id is not None:
+                    vm_id = vm.id
+
+                instance = {'name': name,
+                            'image': image,
+                            'created_at': created_at,
+                            'flavor': flavor,
+                            'ips': ', '.join(self.get_server_ips(vm)),
+                            'id': vm_id,
+                            'obj': vm
+                            }
+                vm_list.append(instance)
+        except Exception as ex:
+            # for troubleshooting
+            print "WARN: check this vm %s" % vm
+            raise(ex)
         return vm_list
 
     def delete_instance(self, vm):

@@ -18,6 +18,7 @@ import click
 from provider.openstack import OpenstackSDK
 from module.clean import Clean
 from module.history import History
+from sys import exit
 
 
 @click.group()
@@ -36,7 +37,11 @@ def cli():
               required=True)
 def openstack(openrc, whitelist):
     openstack = OpenstackSDK(openrc)
-    vms = openstack.get_all_instances()
+    try:
+        vms = openstack.get_all_instances()
+    except Exception as ex:
+        print ex
+        exit(1)
     # clean up
     clean = Clean(vms, whitelist, openstack)
     clean.run()

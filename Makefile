@@ -82,6 +82,7 @@ TEST_OUTPUT=$(RPMTOP)/TESTS
 TEST_UNIT_FILE=unit-tests.xml
 
 test: prep
+	@mkdir $(TEST_OUTPUT)
 	nosetests --verbosity=3 -x --with-xunit --xunit-file=$(TEST_OUTPUT)/$(TEST_UNIT_FILE)	
 	@echo
 
