@@ -97,8 +97,16 @@ class OpenstackSDK(object):
                 vm_id = None
 
                 if "id" in vm.image:
-                    os_img = self.glance.images.get(vm.image['id'])
-                    image = os_img['name']
+                    # situation when image is deleted but there are vms
+                    # with that image associated. e.g.: vm1 is provisioned
+                    # with image1 then image1 is deleted from tenant
+                    # or from public
+                    try:
+                        os_img = self.glance.images.get(vm.image['id'])
+                        image = os_img['name']
+                    except Exception as ex:
+                        print ex
+                        image = "NA, prev deleted"
 
                 if vm.name and vm.name is not None:
                     name = vm.name
@@ -123,7 +131,9 @@ class OpenstackSDK(object):
                 vm_list.append(instance)
         except Exception as ex:
             # for troubleshooting
-            print "WARN: check this vm %s" % vm
+            print ex
+            if vm:
+                print "WARN: check this vm %s" % vm
             raise(ex)
         return vm_list
 
