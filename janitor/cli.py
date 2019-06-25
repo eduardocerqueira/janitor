@@ -35,8 +35,10 @@ def cli():
 @click.option('--whitelist', envvar='WHITELIST', multiple=False,
               type=click.Path(), help="path to your whitelist file to keep",
               required=True)
-def openstack(openrc, whitelist):
-    openstack = OpenstackSDK(openrc)
+@click.option('--keystone', multiple=False, type=click.Path(), help="Keystone version: v2 or v3",
+              required=True)
+def openstack(openrc, whitelist, keystone):
+    openstack = OpenstackSDK(openrc, keystone)
     try:
         vms = openstack.get_all_instances()
     except Exception as ex:

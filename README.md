@@ -24,8 +24,8 @@ clean up virtual machines and release floating ips for Openstack keep items decl
 
     source ~/mytenant-openrc.sh
 
-	janitor openstack --whitelist /tmp/whitelist.txt
-	janitor openstack --openrc /tmp/mytenant-openrc.sh --whitelist /tmp/whitelist.txt
+	janitor openstack --whitelist /tmp/whitelist.txt --keystone v3
+	janitor openstack --openrc /tmp/mytenant-openrc.sh --whitelist /tmp/whitelist.txt --keystone v3
 
 listing history for your janitor:
 
@@ -52,7 +52,7 @@ Running the program without parameters:
 
 Running the program with with parameters to make clean-up:
 
-	[ecerquei@dev ~]$ janitor openstack --openrc /home/ecerquei/git/janitor/tests/test-openrc.sh --whitelist /home/ecerquei/git/janitor/tests/whitelist.txt
+	[ecerquei@dev ~]$ janitor openstack --openrc /home/ecerquei/git/janitor/tests/test-openrc.sh --whitelist /home/ecerquei/git/janitor/tests/whitelist.txt --keystone v2
 	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
 	|      TIMESTAMP      |    ACTION    |       NAME       |             IPs             |                   IMAGE                    | FLAVOR |   CREATED AT (UTC)   |
 	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
