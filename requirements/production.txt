@@ -4,3 +4,4 @@ python-openstackclient
 python-neutronclient
 python-novaclient
 python-glanceclient
+python-cinderclient

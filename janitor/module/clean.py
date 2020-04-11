@@ -21,9 +21,11 @@ from history import History
 
 class Clean(object):
     """ """
-    def __init__(self, vms, wlist_path, driver):
+
+    def __init__(self, vms, wlist_path, volumes, driver):
         self.vm_list = vms
         self.wlist_path = wlist_path
+        self.volumes = volumes
         self.wlist_data = self.read_whitelist()
         self.driver = driver
 
@@ -64,7 +66,15 @@ class Clean(object):
             else:
                 print "Could not delete ip %s" % ip
 
+        # delete volumes
+        vols_deleted = []
+        for vol in self.volumes:
+            # extra verification for not attached volumes
+            if len(vol.attachments) == 0:
+                self.driver.cinder.volumes.delete(vol.id)
+                vols_deleted.append(vol.id)
+
         # history
-        history = History(to_keep, deleted, ips_deleted)
+        history = History(to_keep, deleted, ips_deleted, vols_deleted)
         history.print_report()
         history.update_history()

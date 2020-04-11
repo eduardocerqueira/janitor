@@ -41,11 +41,12 @@ def openstack(openrc, whitelist, keystone):
     openstack = OpenstackSDK(openrc, keystone)
     try:
         vms = openstack.get_all_instances()
+        volumes = openstack.get_volume(status={'status': 'available'})
     except Exception as ex:
         print ex
         exit(1)
     # clean up
-    clean = Clean(vms, whitelist, openstack)
+    clean = Clean(vms, whitelist, volumes, openstack)
     clean.run()
 
 

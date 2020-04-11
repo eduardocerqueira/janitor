@@ -21,10 +21,11 @@ from os.path import join, exists
 
 
 class History(object):
-    def __init__(self, keep=None, deleted=None, ips_deleted=None):
+    def __init__(self, keep=None, deleted=None, ips_deleted=None, vols_deleted=None):
         self.keep = keep
         self.deleted = deleted
         self.ips_deleted = ips_deleted
+        self.vols_deleted = vols_deleted
         self.report = self.create_report()
         self.history_path = join(getenv('HOME'), ".janitor_history.txt")
 
@@ -51,7 +52,7 @@ class History(object):
         create a simple report based on: when, what and who
         """
         # nothing to display
-        if not self.keep and not self.deleted and not self.ips_deleted:
+        if not self.keep and not self.deleted and not self.ips_deleted and not self.vols_deleted:
             return None
 
         # instances/vm report
@@ -75,7 +76,14 @@ class History(object):
         for ip in self.ips_deleted:
             ip_report.add_row([now, 'deleted', ip['floating_ip_address']])
 
-        # group both reports
+        # volumes report
+        vol_report = PrettyTable(['TIMESTAMP', 'ACTION', 'VOLUME ID'])
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        for vol in self.vols_deleted:
+            vol_report.add_row([now, 'deleted', vol])
+
+        # group all reports
         full_report = None
 
         if vm_report._rows.__len__() > 0:
@@ -83,5 +91,8 @@ class History(object):
 
         if ip_report._rows.__len__() > 0:
             full_report = full_report + str(ip_report) + "\n\n"
+
+        if vol_report._rows.__len__() > 0:
+            full_report = full_report + str(vol_report) + "\n\n"
 
         return full_report

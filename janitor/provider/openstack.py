@@ -18,7 +18,7 @@ from os import getenv
 from novaclient.client import Client
 from keystoneauth1 import session
 from neutronclient.v2_0.client import Client as neutronclient
-from sys import exit
+from cinderclient.v3.client import Client as cinderclient
 
 
 class Credentials(object):
@@ -39,7 +39,6 @@ class Credentials(object):
             self.osp_user_domain_name = getenv("OS_USER_DOMAIN_NAME")
             self.osp_project_domain_id = getenv("OS_PROJECT_DOMAIN_ID")
             self.ospidentity_api_version = getenv("OS_IDENTITY_API_VERSION")
-
 
         # file overrides env variable
         if self.openrc_path:
@@ -92,7 +91,7 @@ class Credentials(object):
             for line in lines:
                 if line.startswith('export'):
                     # string formating
-                    kv = line.replace("export", "").replace("\"", "").\
+                    kv = line.replace("export", "").replace("\"", ""). \
                         strip().split("=")
                     if "/v2.0" in kv[1]:
                         kv[1] = kv[1].replace("/v2.0", "")
@@ -106,7 +105,7 @@ class OpenstackSDK(object):
         if keystone == 'v2':
             from keystoneauth1.identity import v2
             self.auth = v2.Password(auth_url="%s/%s"
-                                    % (self.creds.osp_auth_url, "/v2.0"),
+                                             % (self.creds.osp_auth_url, "/v2.0"),
                                     username=self.creds.osp_username,
                                     password=self.creds.osp_password,
                                     tenant_name=self.creds.osp_tenant)
@@ -123,6 +122,7 @@ class OpenstackSDK(object):
         self.nova = Client('2', session=self.session)
         self.glance = glclient.Client('2', session=self.session)
         self.neutron = neutronclient(session=self.session)
+        self.cinder = cinderclient(session=self.session)
 
     def get_all_instances(self):
         try:
@@ -173,7 +173,7 @@ class OpenstackSDK(object):
             print ex
             if vm:
                 print "WARN: check this vm %s" % vm
-            raise(ex)
+            raise (ex)
         return vm_list
 
     def delete_instance(self, vm):
@@ -206,5 +206,12 @@ class OpenstackSDK(object):
         try:
             self.neutron.delete_floatingip(ip)
             return True
+        except Exception as ex:
+            print ex
+
+    def get_volume(self, status):
+        """query cinder for all available volume"""
+        try:
+            return self.cinder.volumes.list(search_opts=status)
         except Exception as ex:
             print ex

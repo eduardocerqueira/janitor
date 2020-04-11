@@ -69,6 +69,12 @@ Running the program with with parameters to make clean-up:
 	+---------------------+---------+--------------+
 	| 2017-07-13 15:00:57 | deleted | 10.8.180.199 |
 	+---------------------+---------+--------------+
+	
+    +---------------------+---------+--------------------------------------+
+    |      TIMESTAMP      |  ACTION |              VOLUME ID               |
+    +---------------------+---------+--------------------------------------+
+    | 2017-07-13 15:00:57 | deleted | 358be8d1-6d4a-4db7-973f-8369d4ff86f7 |
+    +---------------------+---------+--------------------------------------+	
 
 Running the program with parameter to print history file:
 
@@ -90,11 +96,32 @@ Running the program with parameter to print history file:
 	| 2017-07-13 15:00:57 | deleted | 10.8.180.199 |
 	+---------------------+---------+--------------+
 
+    +---------------------+---------+--------------------------------------+
+    |      TIMESTAMP      |  ACTION |              VOLUME ID               |
+    +---------------------+---------+--------------------------------------+
+    | 2017-07-13 15:00:57 | deleted | 358be8d1-6d4a-4db7-973f-8369d4ff86f7 |
+    +---------------------+---------+--------------------------------------+	
 
 # For developer and contributers
 
+Note:
+	At the moment janitor requires python2.7 and it is not compatible with python3 yet!
+
 This section describes how to build a new RPM for janitor;
-I use make so it requires basic packages in your machine I recommend: python-setuptools, python-sphinx, python-devel and gcc
+
+* Fedora 31
+
+	```
+	sudo dnf install redhat-rpm-config python-devel gcc python2-devel python-pip python-wheel
+	virtualenv -p /usr/bin/python2.7 venv
+	source venv/bin/activate
+	pip install -r requirements/devel.txt
+
+	# test
+	python janitor/cli.py --help
+	```
+
+or using **make** so it requires basic packages in your machine I recommend: python-setuptools, python-sphinx, python-devel and gcc
 
 ## RPM / Build
 
