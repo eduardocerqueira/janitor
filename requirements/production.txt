@@ -5,3 +5,4 @@ python-neutronclient
 python-novaclient
 python-glanceclient
 python-cinderclient
+pyrsistent==0.16.1
