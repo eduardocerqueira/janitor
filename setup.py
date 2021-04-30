@@ -47,14 +47,18 @@ def get_install_requires():
 
 install_requires, dependency_links = get_install_requires()
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
-    name='janitor',
+    name='janitor-osp',
     version=get_version(),
-    description='cli tool to perform clean-up',
+    description='Linux cli tool to maintain Openstack quota, deleting old virtual machines, volumes and IP',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://github.com/eduardocerqueira/janitor.git',
     author='Eduardo Cerqueira',
     author_email='eduardomcerqueira@gmail.com',
-    platforms='Fedora >= 24',
     license='GPL',
     test_suite="nose.collector",
     tests_require="nose",
@@ -62,5 +66,6 @@ setup(
     include_package_data=True,
     install_requires=install_requires,
     dependency_links=dependency_links,
+    python_requires=">=3",
     entry_points={'console_scripts': ['janitor=janitor.cli:janitor']}
 )
