@@ -40,6 +40,24 @@ tenant, all managed by API and remote calls.`
 
 ## Install and Usage
 
+from container:
+
+```
+docker pull quay.io/ecerquei/janitor
+docker run --rm -it --network host --name janitor ecerquei/janitor /bin/bash
+
+# copy your files
+docker cp openrc.sh janitor:/home/janitor
+docker cp whitelist.txt janitor:/home/janitor
+
+# load venv and test janitor
+bash-4.4$ source venv/bin/activate
+bash-4.4$ janitor --help
+bash-4.4$ janitor openstack --openrc openrc.sh --whitelist whitelist.txt --keystone v3
+```
+
+see [container](README.md#running-in-docker)
+
 from pip:
 * [https://test.pypi.org/project/janitor-osp/](https://test.pypi.org/project/janitor-osp/)
 * [https://pypi.org/project/janitor-osp/](https://pypi.org/project/janitor-osp/)
@@ -152,11 +170,11 @@ PR and if needed open [issues or discussion](https://github.com/eduardocerqueira
 
 ## running in docker
 
-image is available in [quay janitor repository]() 
+image is available in [quay janitor repository](https://quay.io/repository/ecerquei/janitor) 
 
 ```
 docker pull quay.io/ecerquei/janitor
-docker run -it --rm ecerquei/janitor /bin/bash
+docker run --rm -it --network host --name janitor ecerquei/janitor /bin/bash
 
 # running janitor inside the container
 bash-4.4$ source venv/bin/activate
@@ -167,6 +185,18 @@ to build a new docker image:
 
 ```
 docker build -f Dockerfile . -t ecerquei/janitor
+```
+
+pushing new container to quay
+
+```
+# terminal 1
+docker run -it --rm ecerquei/janitor /bin/bash
+
+# terminal 2
+docker ps -l # and copy the container id 
+docker commit aa20639aa618 quay.io/ecerquei/janitor
+docker push quay.io/ecerquei/janitor
 ```
 
 ## release pypi package
