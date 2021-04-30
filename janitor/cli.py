@@ -15,9 +15,9 @@
 
 import click
 
-from provider.openstack import OpenstackSDK
-from module.clean import Clean
-from module.history import History
+from janitor.provider.openstack import OpenstackSDK
+from janitor.module.clean import Clean
+from janitor.module.history import History
 from sys import exit
 
 

@@ -17,10 +17,12 @@ It `is not` an official Openstack's tool, and Janitor's code is wrapping Opensta
 
 ## Table of content
 * [Motivation](README.md#motivation)
+* [Running in docker](README.md#running-in-docker)
 * [Install and usage](README.md#install-and-usage)
 * [Setup your dev environment](README.md#local-dev-environment)
 * [Running janitor functional tests](tests/README.md#janitor-tests)
 * [Contributing](README.md#contributing)
+* [release pypi package](README.md#release-pypi-package)
 * [Build RPM and release](README.md#build-rpm-and-release)
 * [DEMO](README.md#demo)
 
@@ -38,11 +40,24 @@ tenant, all managed by API and remote calls.`
 
 ## Install and Usage
 
+from pip:
+* [https://test.pypi.org/project/janitor-osp/](https://test.pypi.org/project/janitor-osp/)
+* [https://pypi.org/project/janitor-osp/](https://pypi.org/project/janitor-osp/)
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install pip --upgrade
+pip install -r https://raw.githubusercontent.com/eduardocerqueira/janitor/master/requirements/production.txt
+python3 -m pip install janitor --upgrade
+```
+
 For [Fedora](https://fedoraproject.org/):
 
 1. from [Copr](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/) 
 
 ```
+dnf install dnf-plugin-copr
 dnf copr enable eduardocerqueira/janitor
 dnf install janitor
 ```
@@ -134,6 +149,47 @@ PR and if needed open [issues or discussion](https://github.com/eduardocerqueira
 ```
 # make flake8
 ```
+
+## running in docker
+
+image is available in [quay janitor repository]() 
+
+```
+docker pull quay.io/ecerquei/janitor
+docker run -it --rm ecerquei/janitor /bin/bash
+
+# running janitor inside the container
+bash-4.4$ source venv/bin/activate
+bash-4.4$ janitor --help
+```
+
+to build a new docker image:
+
+```
+docker build -f Dockerfile . -t ecerquei/janitor
+```
+
+## release pypi package
+
+ensure you have permission, and the API token saved at `~/.pypirc` to publish new release to pypi.
+
+1. increment the build updating the var `VERSION=0.3` from [Makefile](Makefile)
+2. make rpm ( needed to generate the new version file )
+3. run commands below: 
+```
+source venv/bin/activate
+python3 -m build
+
+# for testpypi
+python3 -m twine upload --repository testpypi dist/*
+
+# for pypi
+python3 -m twine upload dist/*
+```
+package will be available at:
+
+* [https://test.pypi.org/project/janitor-osp/#history](https://test.pypi.org/project/janitor-osp/#history)
+* [https://pypi.org/project/janitor-osp/#history](https://pypi.org/project/janitor-osp/#history)
 
 ## Build RPM and release
 

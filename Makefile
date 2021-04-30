@@ -2,7 +2,7 @@ default: help
 
 NAME=janitor
 MAN=janitor.1
-VERSION=0.2
+VERSION=0.4
 RPMDIST=$(shell rpm --eval '%dist')
 #RELEASE=1$(rpmsuffix)$(RPMDIST)
 RELEASE=0

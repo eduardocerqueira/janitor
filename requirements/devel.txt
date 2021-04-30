@@ -10,3 +10,5 @@ mccabe>=0.6,<0.7 # version needed by pylint
 pylint
 pytest
 nose
+twine
+build
