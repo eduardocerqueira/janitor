@@ -1,45 +1,53 @@
-RUNNING TESTS
-=============
+# Janitor Tests
 
-Openstack tests requires you have your openstack tenant openrc.sh file that
-provides the Openstack credentials. Janitor's tests reads system
-environment variable if you perform a source to your openrc.sh or from a
-file that should be placed at janitor/tests/test-openrc.sh. There is a
-test-openrc-sample.sh file you can use to start it, just remove -sample or copy
-and paste to a new file without -sample and fill out with your credentials.
+**Requirements:**
+* Openstack cluster properly setup 
+* Openstack tenant and credentials
+* Openstack openrc.sh file
+* whitelist.txt file
+* python venv with janitor/requirements installed see [local dev environment](../README.md#local-dev-environment)
 
-Also whitelist.txt file is required and should be placed at same place like:
-janitor/tests/whitelist.txt
+The tests can handle authentication by environment variables or loading the variables from a physical openrc.sh file, 
+you can use the template `janitor/tests/test-openrc-sample.sh` creating a copy and replacing the content with your
+account and Openstack data.
 
-DATA FOR TESTS
----------------
+Or using environment variable to point the location of your openrc.sh file as showing below:
+```
+export OPENSTACK_CREDS=/home/user/openrc.sh
+```
 
-running the openstack nova cli below you can generate content or vms for your
-tests:
+`whitelist.txt` file is required and should be placed in the same folder: `janitor/tests/whitelist.txt` which will
+contain the name of virtual machines to be kept and not deleted when Janitor runs.
 
-  nova boot --flavor 2 --key-name mykeyname --image e636fa2e-a1fc-48c0-97c4-04fc74651281 test2
+## Generating data for test
 
+It is an optional step, feel free to skip it if you have data in your Openstack for testing. 
 
-HOW TO RUN ALL TESTS
---------------------
+Running the commands below you can generate content or vms for your tests, replace values from `--key-name --image --network` 
+with correspondent from your Openstack:  
 
-you have to install janitor from branch or version you want to run the tests.
-Go to janitor folder and run:
+```
+openstack server create --key-name MyKeyName --flavor m1.small --image FEDORA-34-x86_64-latest --network d655dcd0-b593-439c-997b-aa5bc8c03a3a Fedora34
+openstack server create --key-name MyKeyName --flavor m1.small --image FEDORA-33-x86_64-latest --network d655dcd0-b593-439c-997b-aa5bc8c03a3a Fedora33
+openstack server create --key-name MyKeyName --flavor m1.small --image FEDORA-32-x86_64-latest --network d655dcd0-b593-439c-997b-aa5bc8c03a3a Fedora32
+```
+ 
+## Running tests
 
-  python -m pytest tests -v
+```
+cd tests
 
+# running all tests from a file
+pytest test_openstack_credentials.py -v
 
-HOW TO RUN AN INDIVIDUAL TEST
------------------------------
+# running specific test
+pytest test_openstack_instances.py -v -k test_get_ip_all_instances 
 
-you have to install janitor from branch or version you want to run the tests.
-Go to janitor folder and run:
-
-  python -m pytest tests/openstack/test_instances.py -v
-
-
-ISSUES
-------
+# running all tests
+pytest -v
+```
+  
+## Issues
 
 1. classpath
 
@@ -49,9 +57,3 @@ ISSUES
  PYTHONPATH=janitor pytest tests -v
 
  on this example I am running the command above from my janitor folder.
-
-
-REFERENCE LINKS
-----------------
-
-http://www.tilcode.com/pytest-cli-tips-tricks-settings/

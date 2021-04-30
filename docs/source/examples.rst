@@ -14,6 +14,9 @@ clean up virtual machines and release floating ips for Openstack keep items decl
     source ~/mytenant-openrc.sh
 	janitor --openstack --whitelist /tmp/whitelist.txt
 
+or passing openrc as argument:
+
+    janitor openstack --openrc /root/openrc.sh --whitelist /var/lib/jenkins/workspace/janitor/janitor_whitelist.txt --keystone v3
 
 listing history for your janitor:
 

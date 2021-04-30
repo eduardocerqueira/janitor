@@ -15,7 +15,7 @@
 
 from prettytable import PrettyTable
 from datetime import datetime
-from util import file_mgmt
+from .util import file_mgmt
 from os import getenv
 from os.path import join, exists
 
@@ -38,14 +38,14 @@ class History(object):
         """print history file"""
         if exists(self.history_path):
             history = file_mgmt('r', file_path=self.history_path)
-            print history
+            print(history)
         else:
-            print "no history yet"
+            print("no history yet")
 
     def print_report(self):
         """print current report"""
         if self.report:
-            print self.report
+            print(self.report)
 
     def create_report(self):
         """
@@ -57,17 +57,17 @@ class History(object):
 
         # instances/vm report
         vm_report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
-                                 'IMAGE', 'FLAVOR', 'CREATED AT (UTC)'])
+                                 'IMAGE', 'CREATED AT (UTC)'])
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for vm in self.deleted:
             vm_report.add_row([now, 'deleted', vm['name'],
                                vm['ips'], vm['image'],
-                               vm['flavor'], vm['created_at']])
+                               vm['created_at']])
 
         for vm in self.keep:
             vm_report.add_row([now, 'in whitelist', vm['name'],
                                vm['ips'], vm['image'],
-                               vm['flavor'], vm['created_at']])
+                               vm['created_at']])
 
         # floating ip report
         ip_report = PrettyTable(['TIMESTAMP', 'ACTION', 'FLOATING IP'])
@@ -86,13 +86,13 @@ class History(object):
         # group all reports
         full_report = None
 
-        if vm_report._rows.__len__() > 0:
+        if vm_report.rows.__len__() > 0:
             full_report = str(vm_report) + "\n"
 
-        if ip_report._rows.__len__() > 0:
+        if ip_report.rows.__len__() > 0:
             full_report = full_report + str(ip_report) + "\n\n"
 
-        if vol_report._rows.__len__() > 0:
+        if vol_report.rows.__len__() > 0:
             full_report = full_report + str(vol_report) + "\n\n"
 
         return full_report

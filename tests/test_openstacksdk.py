@@ -15,7 +15,7 @@
 
 
 import pytest
-from provider.openstack import OpenstackSDK
+from janitor.provider.openstack import OpenstackSDK
 from helper import OPENSTACK_CREDS_PATH
 
 

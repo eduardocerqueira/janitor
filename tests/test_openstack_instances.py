@@ -14,7 +14,7 @@
 #
 
 import pytest
-from provider.openstack import OpenstackSDK
+from janitor.provider.openstack import OpenstackSDK
 from helper import OPENSTACK_CREDS_PATH
 
 
@@ -30,11 +30,18 @@ class TestInstances(object):
     def test_get_ip_all_instances(self):
         openstack = OpenstackSDK(OPENSTACK_CREDS_PATH)
         servers = openstack.get_all_instances()
+        vm_no_ip = []
         for server in servers:
-            if openstack.get_server_ips(server['obj']):
-                assert True
-            else:
+            try:
+                if openstack.get_server_ips(server['obj']):
+                    pass
+                else:
+                    vm_no_ip.append(server['obj'])
+            except Exception:
                 assert False
+
+        print(f"Found {len(vm_no_ip)} vms with no assigned IP out of {len(servers)}")
+        assert True
 
     def test_get_zoombies_floating_ips(self):
         openstack = OpenstackSDK(OPENSTACK_CREDS_PATH)
@@ -42,5 +49,5 @@ class TestInstances(object):
         if ips_zoombies:
             assert True
         else:
-            print "ZERO, it is fine!"
+            print("ZERO, it is fine!")
             assert True

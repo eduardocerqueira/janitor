@@ -2,10 +2,10 @@ default: help
 
 NAME=janitor
 MAN=janitor.1
-VERSION=0.1
+VERSION=0.2
 RPMDIST=$(shell rpm --eval '%dist')
 #RELEASE=1$(rpmsuffix)$(RPMDIST)
-RELEASE=1
+RELEASE=0
 PWD=$(shell bash -c "pwd -P")
 RPMTOP=$(PWD)/rpmbuild
 SPEC=$(NAME).spec
@@ -18,7 +18,7 @@ help:
 	@echo
 	@echo "clean     clean temp files from local workspace"
 	@echo "doc       generate sphinx documentation and man pages"
-	@echo "test      run unit tests locally"
+	@echo "test      run functional/unit tests locally"
 	@echo "tarball   generate tarball of p roject"
 	@echo "rpm       build source codes and generate rpm file"
 	@echo "srpm      generate SRPM file"

@@ -1,10 +1,12 @@
 -r production.txt
-flake8==2.6.2
+flake8
 coverage>=3.7.1
 mock>=1.0.1
 setuptools
-# docs
+# docs and static code analysis
 Sphinx
 pep8
+mccabe>=0.6,<0.7 # version needed by pylint
 pylint
 pytest
+nose

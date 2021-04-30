@@ -144,7 +144,7 @@ class OpenstackSDK(object):
                         os_img = self.glance.images.get(vm.image['id'])
                         image = os_img['name']
                     except Exception as ex:
-                        print ex
+                        print(ex)
                         image = "NA, prev deleted"
 
                 if vm.name and vm.name is not None:
@@ -170,9 +170,9 @@ class OpenstackSDK(object):
                 vm_list.append(instance)
         except Exception as ex:
             # for troubleshooting
-            print ex
+            print(ex)
             if vm:
-                print "WARN: check this vm %s" % vm
+                print(f"WARN: check this vm {vm}")
             raise (ex)
         return vm_list
 
@@ -182,14 +182,15 @@ class OpenstackSDK(object):
             self.nova.servers.delete(vm['obj'])
             return True
         except Exception as ex:
-            print ex
+            print(ex)
 
     def get_server_ips(self, server):
         """get IPs for a given server object"""
         server_ips = []
-        for key, value in server.addresses.iteritems():
-            for elem in value:
-                server_ips.append(elem['addr'])
+        if server.addresses:
+            for key, value in server.addresses.items():
+                for elem in value:
+                    server_ips.append(elem['addr'])
         return server_ips
 
     def get_zoombies_floating_ips(self):
@@ -207,11 +208,11 @@ class OpenstackSDK(object):
             self.neutron.delete_floatingip(ip)
             return True
         except Exception as ex:
-            print ex
+            print(ex)
 
     def get_volume(self, status):
         """query cinder for all available volume"""
         try:
             return self.cinder.volumes.list(search_opts=status)
         except Exception as ex:
-            print ex
+            print(ex)
