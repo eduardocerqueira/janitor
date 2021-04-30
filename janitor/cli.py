@@ -47,7 +47,7 @@ def openstack(openrc, whitelist, keystone):
         exit(1)
     # clean up
     clean = Clean(vms, whitelist, volumes, openstack)
-    #clean.run()
+    clean.run()
 
 
 @click.command(short_help='show janitor history')

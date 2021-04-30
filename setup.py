@@ -44,6 +44,7 @@ def get_install_requires():
                 requires.append(line)
     return requires, links
 
+
 install_requires, dependency_links = get_install_requires()
 
 setup(

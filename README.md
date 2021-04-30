@@ -21,7 +21,8 @@ It `is not` an official Openstack's tool, and Janitor's code is wrapping Opensta
 * [Setup your dev environment](README.md#local-dev-environment)
 * [Running janitor functional tests](tests/README.md#janitor-tests)
 * [Contributing](README.md#contributing)
-
+* [Build RPM and release](README.md#build-rpm-and-release)
+* [DEMO](README.md#demo)
 
 ## Motivation
 
@@ -37,28 +38,62 @@ tenant, all managed by API and remote calls.`
 
 ## Install and Usage
 
+For [Fedora](https://fedoraproject.org/):
+
+1. from [Copr](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/) 
+
 ```
-python janitor/cli.py openstack --openrc /root/insights-qa-openrc.sh --whitelist /var/lib/jenkins/workspace/janitor/janitor_whitelist.txt --keystone v3
-python janitor/cli.py openstack --openrc /home/ecerquei/osp/insights-qa-openrc.sh --whitelist /janitor/janitor_whitelist.txt --keystone v3
-openstack --openrc /home/ecerquei/osp/janitor-openrc.sh --whitelist /home/ecerquei/osp/janitor-whitelist.txt --keystone v3
+dnf copr enable eduardocerqueira/janitor
+dnf install janitor
 ```
 
-### usage
+or if you prefer you can install the repo from https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/
+and maybe is needed to disable **gpgcheck=0**
 
-clean up virtual machines and release floating ips for Openstack keep items declared in the whitelist.txt file:
+```
+[eduardocerqueira-janitor]
+name=Copr repo for janitor owned by eduardocerqueira
+baseurl=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/epel-7-$basearch/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=0
+gpgkey=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+```
 
-1. load your Openstack rc to system environment variable or pass as parameter
-2. run janitor
+2. from local build::
 
-    source ~/mytenant-openrc.sh
+```
+make rpm
+dnf install rpmbuild/RPMS/x86_64/janitor-0.2-0.x86_64.rpm
+```
 
-	janitor openstack --whitelist /tmp/whitelist.txt --keystone v3
-	janitor openstack --openrc /tmp/mytenant-openrc.sh --whitelist /tmp/whitelist.txt --keystone v3
+for CentOS:
+
+**requires openstack repo**. check the latest repo https://wiki.openstack.org/wiki/Release_Naming
+
+```
+sudo yum install centos-release-openstack-newton.noarch
+sudo yum install install rpmbuild/RPMS/x86_64/janitor-0.2-0.x86_64.rpm
+```
+
+using Janitor to clean up left-over virtual machines and release floating ips for Openstack tenant:
+
+```
+source ~/mytenant-openrc.sh
+janitor openstack --whitelist /tmp/whitelist.txt --keystone v3
+
+# or passing the path for your openrc file
+janitor openstack --openrc /tmp/mytenant-openrc.sh --whitelist /tmp/whitelist.txt --keystone v3
+```
 
 listing history for your janitor:
 
-	janitor history
-
+```
+janitor history
+```
 
 ## local dev environment
 
@@ -68,8 +103,8 @@ listing history for your janitor:
 * packages: 
 
 ```
-# install packages needed for build and release RPM, and generate doc
-sudo dnf install redhat-rpm-config python3-devel gcc python3-devel python3-pip python3-wheel python3-setuptools, python3-sphinx
+# install packages needed to interact with make, build RPM, and generate doc
+sudo dnf install redhat-rpm-config rpm-build python3-devel gcc python3-devel python3-pip python3-wheel python3-setuptools, python3-sphinx
 
 # prep your python env
 git clone git@github.com:eduardocerqueira/janitor.git
@@ -80,14 +115,27 @@ pip install -r requirements/devel.txt
 
 # check janitor installation
 python janitor/cli.py --help
+openstack --openrc /home/ecerquei/osp/janitor-openrc.sh --whitelist /home/ecerquei/osp/janitor-whitelist.txt --keystone v3
 ```
 
 see [running janitor functional tests](tests/README.md#janitor-tests)
 
+also you can explore the  **make tasks** running `make`.
 
-or using **make** it requires basic packages in your machine I recommend: python-setuptools, python-sphinx, python3-devel and gcc
+when running `make doc` the generated doc can be access at : file:///home/user/git/janitor/docs/build/html/index.html
 
-## RPM / Build
+
+## Contributing
+
+Any idea, suggestions and pacthes are welcome to this project! Fork the project, make your code change, run the test locally
+to ensure your changes are not breaking any functionality, remember to run the code static analysis before submitting your 
+PR and if needed open [issues or discussion](https://github.com/eduardocerqueira/janitor/issues) on this project.
+
+```
+# make flake8
+```
+
+## Build RPM and release
 
 	$ make
 
@@ -107,19 +155,39 @@ Running from your local machine, you can generate your own RPM running:
 
 	$ make rpm
 
-and if your environment is setup properly you should have your RPM at: /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
+if your environment is properly setup you should have your RPM at: /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.2-0.x86_64.rpm
 
-janitor is being built on Fedora Copr: https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/
+janitor is being built on [Fedora Copr https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/)
 
 running a new build you need to check your ~/.config/copr-fedora file and run:
 
 	make build
 
+Before starting the release process, check your account permissions in Copr.
+
+	$ make srpm
+
+   1. copy rpmbuild/SRPMS/janitor-0.0.2-0.src.rpm to janitor/copr
+   2. push janitor/copr to github
+
+  `copr-cli` will be used, installed by `sudo yum/dnf install copr-cli` and configure it.
+
+Request as `Builder` for projects `janitor`, wait until admin approves.
+
+$ copr-cli build janitor https://github.com/eduardocerqueira/janitor/raw/master/copr/janitor-0.0.2-0.src.rpm
+
+Go and grab a cup of tea or coffee, the release build will be come out soon ::
+
+    # tag based builds: `https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/`
+
+**Copr and RPM release helpful Links**
+* https://fedorahosted.org/copr/wiki/HowToEnableRepo
+* http://fedoraproject.org/wiki/Infrastructure/fedorapeople.org#Accessing_Your_fedorapeople.org_Space
+* https://fedorahosted.org/copr/wiki/UserDocs#CanIgiveaccesstomyrepotomyteammate
+* https://copr.fedoraproject.org/api/
 
 
-
-DEMO
-----
+## DEMO
 
 Running the program without parameters:
 
@@ -139,7 +207,7 @@ Running the program without parameters:
 
 Running the program with with parameters to make clean-up:
 
-	[ecerquei@dev ~]$ janitor openstack --openrc /home/ecerquei/git/janitor/tests/test-openrc.sh --whitelist /home/ecerquei/git/janitor/tests/whitelist.txt --keystone v2
+	[ecerquei@dev ~]$ janitor openstack --openrc /home/ecerquei/git/janitor/tests/test-openrc.sh --whitelist /home/ecerquei/git/janitor/tests/whitelist.txt --keystone v3
 	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
 	|      TIMESTAMP      |    ACTION    |       NAME       |             IPs             |                   IMAGE                    | FLAVOR |   CREATED AT (UTC)   |
 	+---------------------+--------------+------------------+-----------------------------+--------------------------------------------+--------+----------------------+
@@ -189,54 +257,8 @@ Running the program with parameter to print history file:
     | 2017-07-13 15:00:57 | deleted | 358be8d1-6d4a-4db7-973f-8369d4ff86f7 |
     +---------------------+---------+--------------------------------------+	
 
-## Contributing 
 
-
-
-
-## install
-
-Installing from your local machine, after you build your own RPM just run:
-
-for Fedora:
-
-	sudo dnf install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
-
-for CentOS:
-
-	*requires openstack repo*. you can consult here the latest repo https://wiki.openstack.org/wiki/Release_Naming
-
-	sudo yum install centos-release-openstack-newton.noarch
-	sudo yum install /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
-
-To install from latest RPM:
-
-**repo:** https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/
-
-for Fedora:
-
-	sudo dnf copr enable eduardocerqueira/janitor
-
-or if needed get the repo from https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/
-and maybe is needed to disable **gpgcheck=0**
-
-
-	[eduardocerqueira-janitor]
-	name=Copr repo for janitor owned by eduardocerqueira
-	baseurl=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/epel-7-$basearch/
-	type=rpm-md
-	skip_if_unavailable=True
-	gpgcheck=0
-	gpgkey=https://copr-be.cloud.fedoraproject.org/results/eduardocerqueira/janitor/pubkey.gpg
-	repo_gpgcheck=0
-	enabled=1
-	enabled_metadata=1
-
-
-or if links above don't work go to Copr Janitor project for more details how to proceed from here.
-
-INSTALLATION FAQ
-----------------
+### issues 
 
 Running on CentOS7 even having EPEL and centos-release-openstack-newton I got this error in one of my CentOS
 server.
@@ -293,23 +315,3 @@ the latest version I got was 2.11 that still don't satisfacts.
 The trick here was, forcing reinstall requests using pip:
 
 	pip install requests --upgrade
-
-
-## MORE INFO
-
-For others topics listed below, please generate the sphinx doc in your local machine running the command:
-
-	$ make doc
-
-and from a browser access: file:///home/user/git/janitor/docs/build/html/index.html
-
-* Install:
-* Guide:
-* Build:
-* Development:
-
-
- ## How to contribute
-
- Feel free to fork and send me pacthes or messages if you think this tool can be helpful for any other scenario.
-

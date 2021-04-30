@@ -23,7 +23,7 @@ class TestCredentials(object):
     def test_negative_credentials(self):
         try:
             OpenstackSDK()
-        except:
+        except Exception:
             assert True
 
     def test_credentials(self):

@@ -25,16 +25,16 @@ janitor is a Linux helper tool to perform clean-up tasks to Openstack based on w
 %setup -q -n %{name}
 
 %build
-%{__python} setup.py build
+%{__python3} setup.py build
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
 mkdir -p %{buildroot}/%{_mandir}/man1
 cp janitor.1 %{buildroot}/%{_mandir}/man1/janitor.1
 
 %files
 %defattr(755,root,root,755)
-%{python_sitelib}/janitor*
+%{python3_sitelib}/janitor*
 %attr (755,root,root)/usr/bin/janitor
 %doc README.md
 %doc AUTHORS
