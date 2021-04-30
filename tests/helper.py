@@ -16,32 +16,31 @@
 from os import getenv, getcwd
 from os.path import exists, join, dirname
 
-
 ROOT = dirname(getcwd())
 
 
 def get_openstack_creds():
-
     ops_creds = getenv("OPENSTACK_CREDS")
     if ops_creds:
-        print "Using %s" % ops_creds
+        print(f"Using {ops_creds}")
         return ops_creds
     # root and workspace folder
     elif exists(join(ROOT, 'test-openrc.sh')):
         ops_creds = join(ROOT, 'test-openrc.sh')
-        print "Using %s" % ops_creds
+        print(f"Using {ops_creds}")
         return ops_creds
     # tests folder
     elif exists(join(ROOT, 'tests/test-openrc.sh')):
         ops_creds = join(ROOT, 'tests/test-openrc.sh')
-        print "Using %s" % ops_creds
+        print(f"Using {ops_creds}")
         return ops_creds
     # janitor folder
     elif exists(join(ROOT, 'janitor/tests/test-openrc.sh')):
         ops_creds = join(ROOT, 'janitor/tests/test-openrc.sh')
-        print "Using %s" % ops_creds
+        print(f"Using {ops_creds}")
         return ops_creds
     else:
         raise Exception("missing Openstack credentials")
+
 
 OPENSTACK_CREDS_PATH = get_openstack_creds()

@@ -1,5 +1,5 @@
 click
-PrettyTable
+PrettyTable<0.8,>=0.7.1 # version required by python-glanceclient==3.3.0
 python-openstackclient
 python-neutronclient
 python-novaclient

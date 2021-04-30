@@ -6,9 +6,9 @@ Group:		Applications/Tools
 License:	GPL3+
 Source0:	http://github.com/eduardocerqueira/janitor/%{name}-%{version}.tar.gz
 
-BuildRequires:  python-setuptools
-Requires:       python
-Requires:		python-pip
+BuildRequires:  python3-setuptools
+Requires:       python3
+Requires:		python3-pip
 Requires:		python-click
 Requires:		python-prettytable
 Requires:		python-openstackclient
@@ -19,7 +19,7 @@ Requires:		python-openstackclient
 %define _missing_doc_files_terminate_build 0
 
 %description
-janitor is a Linux helper tool to perform clean-up for Openstack based on whitelist
+janitor is a Linux helper tool to perform clean-up tasks to Openstack based on whitelist
 
 %prep
 %setup -q -n %{name}
@@ -41,5 +41,7 @@ cp janitor.1 %{buildroot}/%{_mandir}/man1/janitor.1
 %{_mandir}/man1/janitor.1.gz
 
 %changelog
+* Fri Apr 30 2021 Eduardo Cerqueira <eduardomcerqueira@gmail.com> - 0.0.2
+- code refactoring migrating to python3
 * Sun Oct 30 2016 Eduardo Cerqueira <eduardomcerqueira@gmail.com> - 0.0.1
 - initial build

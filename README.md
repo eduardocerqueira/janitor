@@ -1,21 +1,49 @@
 
 ![copr build](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/package/janitor/status_image/last_build.png)
 
-# janitor
+# Janitor
 
-MOTIVATION
-----------
+<img align="left" width="100" height="100" src="https://raw.githubusercontent.com/eduardocerqueira/janitor/python3/docs/source/logo.jpg">
 
-One of my Openstack tenants that I use to run tests for an internal tool has a very limited quota so all the time I need to stop my tests and automations and spend few minutes
-cleaning up public/floating ips, destroying virtual machines and others. The idea to have janitor or a butler is actually an old idea and a coworker had implemented
-it but in a more sophisticated and fashion way this is a simply version and currently only focusing in Openstack maybe further I'll extend it to AWS, Openshift and others.
+Janitor is a Linux component to perform quota management tasks to an [Openstack](https://www.openstack.org/) tenant. 
 
-WHAT IS THIS
--------------
+It `is not` an official Openstack's tool, and Janitor's code is wrapping Openstack python client libraries:
 
-Linux tool to help clean-up tasks for Openstack.
+* [python-openstackclient](https://pypi.org/project/python-openstackclient/) to manage authentication and as general API 
+* [python-neutronclient](https://github.com/openstack/python-neutronclient) to manage network
+* [python-novaclient](https://github.com/openstack/python-novaclient) to manage compute nodes and vms
+* [python-glanceclient](https://github.com/openstack/python-glanceclient) to manage cloud images
+* [python-cinderclient](https://github.com/openstack/python-cinderclient) to manage volumes and block storage
 
-USAGE
+## Table of content
+* [Motivation](README.md#motivation)
+* [Install and usage](README.md#install-and-usage)
+* [Setup your dev environment](README.md#local-dev-environment)
+* [Running janitor functional tests](tests/README.md#janitor-tests)
+* [Contributing](README.md#contributing)
+
+
+## Motivation
+
+I have been using OpenStack continuously since 2014 as a resource to run workloads with the main purpose of 
+testing software. Manage a healthy Openstack tenant quota is vital when working with CI/CD and a large number of 
+automated pipelines which run 24/7. A long time ago I and my team were having a lot of headaches with one of internal 
+Openstack the cluster which at that time had a very limited quota and workload capacity but was important for the 
+test workflow. With the constant false-positive for test failing due to lack of public/floating IP, storage/volume, 
+and even virtual CPU when provisioning new VMs, we got the idea of implementing Janitor, a super simple script/codes 
+to `automate the clean-up task of deleting left-over virtual machines as well network and volume from an Openstack 
+tenant, all managed by API and remote calls.`  
+
+
+## Install and Usage
+
+```
+python janitor/cli.py openstack --openrc /root/insights-qa-openrc.sh --whitelist /var/lib/jenkins/workspace/janitor/janitor_whitelist.txt --keystone v3
+python janitor/cli.py openstack --openrc /home/ecerquei/osp/insights-qa-openrc.sh --whitelist /janitor/janitor_whitelist.txt --keystone v3
+openstack --openrc /home/ecerquei/osp/janitor-openrc.sh --whitelist /home/ecerquei/osp/janitor-whitelist.txt --keystone v3
+```
+
+### usage
 
 clean up virtual machines and release floating ips for Openstack keep items declared in the whitelist.txt file:
 
@@ -30,6 +58,65 @@ clean up virtual machines and release floating ips for Openstack keep items decl
 listing history for your janitor:
 
 	janitor history
+
+
+## local dev environment
+
+**Requirements:**
+* Linux OS *tested on Fedora and CentOS*
+* Python3
+* packages: 
+
+```
+# install packages needed for build and release RPM, and generate doc
+sudo dnf install redhat-rpm-config python3-devel gcc python3-devel python3-pip python3-wheel python3-setuptools, python3-sphinx
+
+# prep your python env
+git clone git@github.com:eduardocerqueira/janitor.git
+cd janitor
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements/devel.txt
+
+# check janitor installation
+python janitor/cli.py --help
+```
+
+see [running janitor functional tests](tests/README.md#janitor-tests)
+
+
+or using **make** it requires basic packages in your machine I recommend: python-setuptools, python-sphinx, python3-devel and gcc
+
+## RPM / Build
+
+	$ make
+
+	Usage: make <target> where <target> is one of
+
+	clean     clean temp files from local workspace
+	doc       generate sphinx documentation and man pages
+	test      run functional/unit tests locally
+	tarball   generate tarball of project
+	rpm       build source codes and generate rpm file
+	srpm      generate SRPM file
+	build     generate srpm and send to build in copr
+	all       clean test doc rpm
+	flake8    check Python style based on flake8
+
+Running from your local machine, you can generate your own RPM running:
+
+	$ make rpm
+
+and if your environment is setup properly you should have your RPM at: /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
+
+janitor is being built on Fedora Copr: https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/
+
+running a new build you need to check your ~/.config/copr-fedora file and run:
+
+	make build
+
+
+
 
 DEMO
 ----
@@ -102,54 +189,9 @@ Running the program with parameter to print history file:
     | 2017-07-13 15:00:57 | deleted | 358be8d1-6d4a-4db7-973f-8369d4ff86f7 |
     +---------------------+---------+--------------------------------------+	
 
-# For developer and contributers
+## Contributing 
 
-Note:
-	At the moment janitor requires python2.7 and it is not compatible with python3 yet!
 
-This section describes how to build a new RPM for janitor;
-
-* Fedora 31
-
-	```
-	sudo dnf install redhat-rpm-config python-devel gcc python2-devel python-pip python-wheel
-	virtualenv -p /usr/bin/python2.7 venv
-	source venv/bin/activate
-	pip install -r requirements/devel.txt
-
-	# test
-	python janitor/cli.py --help
-	```
-
-or using **make** so it requires basic packages in your machine I recommend: python-setuptools, python-sphinx, python-devel and gcc
-
-## RPM / Build
-
-	$ make
-
-	Usage: make <target> where <target> is one of
-
-	clean     clean temp files from local workspace
-	doc       generate sphinx documentation and man pages
-	test      run unit tests locally
-	tarball   generate tarball of project
-	rpm       build source codes and generate rpm file
-	srpm      generate SRPM file
-	build     generate srpm and send to build in copr
-	all       clean test doc rpm
-	flake8    check Python style based on flake8
-
-Running from your local machine, you can generate your own RPM running:
-
-	$ make rpm
-
-and if your environment is setup properly you should have your RPM at: /home/user/git/janitor/rpmbuild/RPMS/x86_64/janitor-0.0.1-1.x86_64.rpm
-
-janitor is being built on Fedora Copr: https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/builds/
-
-running a new build you need to check your ~/.config/copr-fedora file and run:
-
-	make build
 
 
 ## install

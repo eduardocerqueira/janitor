@@ -15,8 +15,8 @@
 
 from fnmatch import fnmatch
 from os.path import exists
-from util import file_mgmt
-from history import History
+from .util import file_mgmt
+from .history import History
 
 
 class Clean(object):
@@ -32,7 +32,7 @@ class Clean(object):
     def read_whitelist(self):
         """ """
         if not exists(self.wlist_path):
-            raise Exception("File %s not found" % self.wlist_path)
+            raise Exception(f"File {self.wlist_path} not found")
 
         wlist = file_mgmt('r', file_path=self.wlist_path)
         return wlist.split()
@@ -53,9 +53,10 @@ class Clean(object):
         for vm in self.vm_list:
             if vm['name'] not in to_keep_names:
                 if self.driver.delete_instance(vm):
-                    deleted.append(vm)
+                    print(vm['name'])
+                    # deleted.append(vm)
                 else:
-                    print "Could not delete vm %s" % vm['name']
+                    print(f"Could not delete vm {vm['name']}")
 
         # delete zoombies floating ips
         ips_deleted = []
@@ -64,7 +65,7 @@ class Clean(object):
             if self.driver.delete_floating_ip(ip['id']):
                 ips_deleted.append(ip)
             else:
-                print "Could not delete ip %s" % ip
+                print(f"Could not delete ip {ip}")
 
         # delete volumes
         vols_deleted = []
