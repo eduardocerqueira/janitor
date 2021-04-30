@@ -103,8 +103,8 @@ janitor history
 * packages: 
 
 ```
-# install packages needed to interact with make, build RPM, and generate doc
-sudo dnf install redhat-rpm-config rpm-build python3-devel gcc python3-devel python3-pip python3-wheel python3-setuptools, python3-sphinx
+# install packages needed to interact with make, build RPM, make release to Copr, and generate doc
+sudo dnf install redhat-rpm-config rpm-build python3-devel gcc python3-devel python3-pip python3-wheel python3-setuptools, python3-sphinx copr-cli
 
 # prep your python env
 git clone git@github.com:eduardocerqueira/janitor.git

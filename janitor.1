@@ -63,6 +63,13 @@ janitor –openstack –whitelist /tmp/whitelist.txt
 .UNINDENT
 .UNINDENT
 .sp
+or passing openrc as argument:
+.INDENT 0.0
+.INDENT 3.5
+janitor openstack –openrc /root/openrc.sh –whitelist /var/lib/jenkins/workspace/janitor/janitor_whitelist.txt –keystone v3
+.UNINDENT
+.UNINDENT
+.sp
 listing history for your janitor:
 .INDENT 0.0
 .INDENT 3.5
