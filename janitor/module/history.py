@@ -15,7 +15,7 @@
 
 from prettytable import PrettyTable
 from datetime import datetime
-from .util import file_mgmt
+from janitor.module.util import file_mgmt
 from os import getenv
 from os.path import join, exists
 
@@ -56,18 +56,13 @@ class History(object):
             return None
 
         # instances/vm report
-        vm_report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs',
-                                 'IMAGE', 'CREATED AT (UTC)'])
+        vm_report = PrettyTable(['TIMESTAMP', 'ACTION', 'NAME', 'IPs', 'IMAGE', 'CREATED AT (UTC)'])
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for vm in self.deleted:
-            vm_report.add_row([now, 'deleted', vm['name'],
-                               vm['ips'], vm['image'],
-                               vm['created_at']])
+            vm_report.add_row([now, 'deleted', vm['name'], vm['ips'], vm['image'], vm['created_at']])
 
         for vm in self.keep:
-            vm_report.add_row([now, 'in whitelist', vm['name'],
-                               vm['ips'], vm['image'],
-                               vm['created_at']])
+            vm_report.add_row([now, 'in whitelist', vm['name'], vm['ips'], vm['image'], vm['created_at']])
 
         # floating ip report
         ip_report = PrettyTable(['TIMESTAMP', 'ACTION', 'FLOATING IP'])

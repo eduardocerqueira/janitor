@@ -15,8 +15,8 @@
 
 from fnmatch import fnmatch
 from os.path import exists
-from .util import file_mgmt
-from .history import History
+from janitor.module.util import file_mgmt
+from janitor.module.history import History
 
 
 class Clean(object):
