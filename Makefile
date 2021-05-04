@@ -2,7 +2,7 @@ default: help
 
 NAME=janitor
 MAN=janitor.1
-VERSION=0.4
+VERSION=0.5
 RPMDIST=$(shell rpm --eval '%dist')
 #RELEASE=1$(rpmsuffix)$(RPMDIST)
 RELEASE=0
@@ -22,9 +22,14 @@ help:
 	@echo "tarball   generate tarball of p roject"
 	@echo "rpm       build source codes and generate rpm file"
 	@echo "srpm      generate SRPM file"
-	@echo "build     generate srpm and send to build in copr"
 	@echo "all       clean test doc rpm"
 	@echo "flake8    check Python style based on flake8"
+	@echo "egg       build python egg to send to pypi"
+	@echo "       -------- devOps ---------       "
+	@echo "build     start build in copr"
+	@echo "pypi      upload egg to pypi"
+	@echo "testpypi  upload egg to pypi"
+	@echo "docker    build docker image"
 	@echo
 
 all: clean test doc rpm
@@ -42,7 +47,7 @@ clean:
 	$(RM) -r rpmbuild
 	@find -name '*.py[co]' -delete
 	make clean -C docs/
-	rm -rf docs/build build dist janitor.egg-info
+	rm -rf docs/build build dist janitor.egg-info janitor_osp.egg-info janitor_eduardocerqueira.egg-info
 
 doc: prep set-version
 	make -C docs/ html
@@ -75,6 +80,22 @@ build: srpm
 	@echo "running build in https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/"
 	@copr-cli --config /home/$(USER)/.config/copr-fedora \
 	build eduardocerqueira/janitor $(RPMTOP)/SRPMS/$(SRPM) 
+
+egg: srpm
+	@echo "building egg from branch $(BRANCH)"
+	python3 -m build
+
+pypi: egg
+	@echo "uploading new version to pypi"
+	python3 -m twine upload dist/*
+
+testpypi: egg
+	@echo "uploading new version to test.pypi"
+	python3 -m twine upload --repository testpypi dist/*
+
+docker:
+	@echo "building new docker image"
+	docker build -f Dockerfile . -t ecerquei/janitor
 
 # Unit tests
 TEST_SOURCE=tests

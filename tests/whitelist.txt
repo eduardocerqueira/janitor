@@ -1,5 +1,7 @@
 centos
-rhel
+iqe*
+f*
+rhel*
 jslave*
 windows*
 *jeff*

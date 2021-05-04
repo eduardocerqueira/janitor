@@ -51,7 +51,7 @@ class History(object):
         """
         create a simple report based on: when, what and who
         """
-        # nothing to display
+        # no new data, skipping generating new report
         if not self.keep and not self.deleted and not self.ips_deleted and not self.vols_deleted:
             return None
 
@@ -81,13 +81,16 @@ class History(object):
         # group all reports
         full_report = None
 
-        if vm_report.rows.__len__() > 0:
-            full_report = str(vm_report) + "\n"
+        try:
+            if len(vm_report._rows) > 0:
+                full_report = str(vm_report) + "\n"
 
-        if ip_report.rows.__len__() > 0:
-            full_report = full_report + str(ip_report) + "\n\n"
+            if len(ip_report._rows) > 0:
+                full_report = full_report + str(ip_report) + "\n\n"
 
-        if vol_report.rows.__len__() > 0:
-            full_report = full_report + str(vol_report) + "\n\n"
+            if len(vol_report._rows) > 0:
+                full_report = full_report + str(vol_report) + "\n\n"
+        except Exception as ex:
+            print(ex)
 
         return full_report

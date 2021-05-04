@@ -23,4 +23,5 @@ RUN python3 -m venv $JANITOR_HOME/venv
 RUN . $JANITOR_HOME/venv/bin/activate && pip3 install pip --upgrade
 RUN . $JANITOR_HOME/venv/bin/activate && pip3 install -r $JANITOR_HOME/production.txt
 # installing from https://pypi.org/project/janitor-osp/
-RUN . $JANITOR_HOME/venv/bin/activate && pip3 install janitor-osp
+RUN . $JANITOR_HOME/venv/bin/activate && pip3 install janitor-osp --upgrade
+RUN . $JANITOR_HOME/venv/bin/activate && pip3 freeze |grep janitor
