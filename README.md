@@ -1,5 +1,6 @@
 
 ![copr build](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/package/janitor/status_image/last_build.png)
+[![Docker Repository on Quay](https://quay.io/repository/ecerquei/janitor/status "Docker Repository on Quay")](https://quay.io/repository/ecerquei/janitor)
 
 # Janitor
 
@@ -17,6 +18,7 @@ It `is not` an official Openstack's tool, and Janitor's code is wrapping Opensta
 
 ## Table of content
 * [Motivation](README.md#motivation)
+* [Quick links](README.md#quick-links)
 * [Running in docker](README.md#running-in-docker)
 * [Install and usage](README.md#install-and-usage)
 * [Setup your dev environment](README.md#local-dev-environment)
@@ -25,6 +27,18 @@ It `is not` an official Openstack's tool, and Janitor's code is wrapping Opensta
 * [release pypi package](README.md#release-pypi-package)
 * [Build RPM and release](README.md#build-rpm-and-release)
 * [DEMO](README.md#demo)
+
+
+## Quick links
+
+| repo | description |
+| --- | --- |
+| [Git](https://github.com/eduardocerqueira/janitor) | source code repository |
+| [Copr](https://copr.fedorainfracloud.org/coprs/eduardocerqueira/janitor/) | RPM build |
+| [Quay.io](https://quay.io/repository/ecerquei/janitor) | container image build |
+| [test.pypi](https://test.pypi.org/project/janitor-osp/) | pypi repo for testing python package release |
+| [pypi](https://pypi.org/project/janitor-osp/) | pypi repo for prod python package release |
+
 
 ## Motivation
 
