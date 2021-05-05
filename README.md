@@ -64,8 +64,6 @@ docker run --rm -it --network host --name janitor ecerquei/janitor /bin/bash
 docker cp openrc.sh janitor:/home/janitor
 docker cp whitelist.txt janitor:/home/janitor
 
-# load venv and test janitor
-bash-4.4$ source venv/bin/activate
 bash-4.4$ janitor --help
 bash-4.4$ janitor openstack --openrc openrc.sh --whitelist whitelist.txt --keystone v3
 ```
@@ -191,7 +189,6 @@ docker pull quay.io/ecerquei/janitor
 docker run --rm -it --network host --name janitor ecerquei/janitor /bin/bash
 
 # running janitor inside the container
-bash-4.4$ source venv/bin/activate
 bash-4.4$ janitor --help
 ```
 
@@ -205,7 +202,7 @@ pushing new container to quay
 
 ```
 # terminal 1
-docker run -it --rm ecerquei/janitor /bin/bash
+docker run --rm -it --network host --name janitor ecerquei/janitor /bin/bash
 
 # terminal 2
 docker ps -l # and copy the container id 
