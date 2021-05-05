@@ -17,7 +17,7 @@ from prettytable import PrettyTable
 from datetime import datetime
 from janitor.module.util import file_mgmt
 from os import getenv
-from os.path import join, exists
+from os.path import join, exists, getsize
 
 
 class History(object):
@@ -27,7 +27,7 @@ class History(object):
         self.ips_deleted = ips_deleted
         self.vols_deleted = vols_deleted
         self.report = self.create_report()
-        self.history_path = join(getenv('HOME'), ".janitor_history.txt")
+        self.history_path = join(getenv('JANITOR_HOME', default='HOME'), ".janitor_history.txt")
 
     def update_history(self):
         """append latest report to history file"""
@@ -36,11 +36,12 @@ class History(object):
 
     def print_history(self):
         """print history file"""
-        if exists(self.history_path):
-            history = file_mgmt('r', file_path=self.history_path)
-            print(history)
-        else:
-            print("no history yet")
+        if not exists(self.history_path) or getsize(self.history_path) == 0:
+            print(f"seems it is your first execution, no history found in {self.history_path}")
+            return
+
+        history = file_mgmt('r', file_path=self.history_path)
+        print(history)
 
     def print_report(self):
         """print current report"""
